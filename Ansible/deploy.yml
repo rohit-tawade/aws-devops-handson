@@ -15,7 +15,7 @@
 
     - name: Clone frontend repo
       git:
-        repo: https://github.com/deshraj-techhub/react-frontend-app.git
+        repo: https://github.com/rohit-tawade/aws-devops-handson-task.git
         dest: /app
         force: yes
 
