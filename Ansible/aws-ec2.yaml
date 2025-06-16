@@ -1,12 +1,15 @@
 plugin: amazon.aws.aws_ec2
 regions:
   - ap-south-1
+
 filters:
   tag:Name: MyEC2Instance
+
+hostnames:
+  - public-ip-address
+
 keyed_groups:
   - key: tags.Name
     prefix: tag_Name_
-hostnames:
-  - public-ip-address
-compose:
-  ansible_host: public_ip_address
+
+strict: False

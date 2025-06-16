@@ -11,15 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: 📥 Checkout Code
       uses: actions/checkout@v3
 
-    - name: Set up Python
+    - name: 🐍 Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
-    - name: Install Ansible and AWS dependencies
+    - name: 🧰 Install Ansible and AWS dependencies
       run: |
         python -m pip install --upgrade pip
         pip install ansible boto3 botocore
@@ -32,8 +32,20 @@ jobs:
         AWS_DEFAULT_REGION: ap-south-1
       run: |
         echo "Listing EC2 hosts from dynamic inventory:"
+        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
         ansible-inventory -i Ansible/aws_ec2.yaml --list
         echo "Host groups:"
+        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
+        ansible-inventory -i Ansible/aws_ec2.yaml --graph
+
+    - name: 🛠️ Debug Ansible Inventory
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ap-south-1
+      run: |
+        echo "🔎 Testing Ansible Dynamic Inventory"
+        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
         ansible-inventory -i Ansible/aws_ec2.yaml --graph
 
     - name: 🚀 Run Ansible Playbook
@@ -42,4 +54,5 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ap-south-1
       run: |
+        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
         ansible-playbook -i Ansible/aws_ec2.yaml Ansible/deploy.yml
