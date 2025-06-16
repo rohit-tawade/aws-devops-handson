@@ -4,32 +4,30 @@
   become: yes
 
   tasks:
-    - name: 🧼 Update system packages
+    - name: 🧼 Update all packages
       yum:
         name: "*"
         state: latest
 
-    - name: 🟢 Install Node.js
+    - name: 🧩 Install Node.js and Git
       yum:
-        name: nodejs
+        name:
+          - nodejs
+          - git
         state: present
 
-    - name: 🟢 Install Git
-      yum:
-        name: git
-        state: present
-
-    - name: 📁 Clone React app from GitHub
+    - name: 📁 Clone GitHub Repo
       git:
-        repo: 'https://github.com/rohit-tawade/aws-devops-handson.git'
+        repo: https://github.com/rohit-tawade/aws-devops-handson.git
         dest: /home/ec2-user/app
+        force: yes
 
-    - name: 📦 Install npm dependencies
+    - name: 📦 Install Node dependencies
       npm:
-        path: /home/ec2-user/app/frontend
+        path: /home/ec2-user/app
         production: yes
 
-    - name: 🚀 Start the React app in background
+    - name: 🚀 Start React App
       shell: |
-        cd /home/ec2-user/app/frontend
+        cd /home/ec2-user/app
         nohup npm start &
