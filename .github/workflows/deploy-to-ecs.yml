@@ -3,7 +3,7 @@ name: 🚀 Deploy React App to AWS ECS
 on:
   push:
     branches:
-      - main  # or your main branch
+      - main  # Adjust if your default branch is different
 
 jobs:
   deploy:
@@ -25,6 +25,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
+    - name: 📦 Terraform Init
+      working-directory: ./Terraform/ecr-ecs
+      run: terraform init
+
+    - name: ⚙️ Terraform Apply
+      working-directory: ./Terraform/ecr-ecs
+      run: terraform apply -auto-approve
+
     - name: 🐳 Log in to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
@@ -40,11 +48,3 @@ jobs:
     - name: 🚀 Push Docker image to ECR
       run: |
         docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$IMAGE_TAG
-
-    - name: 📦 Terraform Init
-      working-directory: ./Terraform/ecr-ecs
-      run: terraform init
-
-    - name: ⚙️ Terraform Apply
-      working-directory: ./Terraform/ecr-ecs
-      run: terraform apply -auto-approve
