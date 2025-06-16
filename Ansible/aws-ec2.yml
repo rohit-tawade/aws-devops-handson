@@ -1,8 +1,9 @@
+# Ansible/aws_ec2.yaml
 plugin: aws_ec2
 regions:
   - ap-south-1
 filters:
-  tag:Name: MyEC2Instance    # EC2 instance must have this tag
+  tag:Name: MyEC2Instance
 keyed_groups:
   - key: tags.Name
     prefix: tag_Name_
