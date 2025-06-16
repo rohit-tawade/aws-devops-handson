@@ -18,5 +18,6 @@ variable "instance_type" {
 
 variable "key_name" {
   description = "Name of the SSH key pair"
-  type        = "Linux-Key"
+  type        = string
+  default = "Linux-Key"
 }
