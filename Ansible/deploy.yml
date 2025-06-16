@@ -1,4 +1,4 @@
-- hosts: tag_Name_MyEC2Instance
+- hosts: tag_Name_MyEC2Instance  # Target EC2 by tag Name
   become: true
   tasks:
     - name: Install required packages on Debian-based systems
@@ -14,7 +14,7 @@
         state: present
       when: ansible_os_family == "RedHat"
 
-    - name: Clone frontend repo
+    - name: Clone React frontend repo
       git:
         repo: https://github.com/rohit-tawade/aws-devops-handson-task.git
         dest: /app
