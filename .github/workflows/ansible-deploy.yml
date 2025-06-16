@@ -24,15 +24,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install ansible boto3 botocore
 
-    - name: 🔑 Add SSH Key for EC2 Access
+    - name: 🛡️ Setup SSH Key
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-      shell: bash
+        ssh-keyscan 13.234.30.141 >> ~/.ssh/known_hosts
 
-    - name: 🚀 Run Ansible Playbook on EC2 using static inventory
+    - name: 🚀 Run Ansible Playbook
       env:
-        ANSIBLE_HOST_KEY_CHECKING: False
+        ANSIBLE_HOST_KEY_CHECKING: false
       run: |
         ansible-playbook -i Ansible/inventory.ini Ansible/deploy.yml

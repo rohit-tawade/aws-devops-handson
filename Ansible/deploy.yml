@@ -3,40 +3,33 @@
   hosts: web
   become: yes
 
-  vars:
-    app_dir: /home/ec2-user/app
-
   tasks:
-    - name: Update all packages
+    - name: 🧼 Update system packages
       yum:
-        name: '*'
+        name: "*"
         state: latest
 
-    - name: Install Node.js and npm
+    - name: 🟢 Install Node.js
       yum:
         name: nodejs
         state: present
 
-    - name: Install Git
+    - name: 🟢 Install Git
       yum:
         name: git
         state: present
 
-    - name: Clone the frontend app from GitHub
+    - name: 📁 Clone React app from GitHub
       git:
         repo: 'https://github.com/rohit-tawade/aws-devops-handson.git'
-        dest: "{{ app_dir }}"
-        version: main
-        force: yes
+        dest: /home/ec2-user/app
 
-    - name: Install npm dependencies
+    - name: 📦 Install npm dependencies
       npm:
-        path: "{{ app_dir }}/frontend"
+        path: /home/ec2-user/app/frontend
         production: yes
 
-    - name: Start React app in background
+    - name: 🚀 Start the React app in background
       shell: |
-        cd {{ app_dir }}/frontend
+        cd /home/ec2-user/app/frontend
         nohup npm start &
-      args:
-        chdir: "{{ app_dir }}/frontend"
