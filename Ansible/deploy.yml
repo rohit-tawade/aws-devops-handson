@@ -1,13 +1,14 @@
-- hosts: tag_Name_MyEC2Instance  # Matches dynamic inventory group
+- hosts: tag_Name_MyEC2Instance
   become: true
   tasks:
-    - name: Install required packages
+    - name: Install required packages on Debian-based systems
       apt:
         name: ['nodejs', 'npm', 'git']
         state: present
+        update_cache: yes
       when: ansible_os_family == "Debian"
 
-    - name: Install required packages (Amazon Linux)
+    - name: Install required packages on RedHat-based systems (Amazon Linux)
       yum:
         name: ['nodejs', 'npm', 'git']
         state: present
@@ -24,9 +25,7 @@
       args:
         chdir: /app
 
-    - name: Start the React app
-      command: npm start
+    - name: Start the React app in background
+      shell: nohup npm start > app.log 2>&1 &
       args:
         chdir: /app
-      async: 300
-      poll: 0
