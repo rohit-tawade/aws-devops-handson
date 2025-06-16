@@ -1,0 +1,50 @@
+name: 🚀 Deploy React App to AWS ECS
+
+on:
+  push:
+    branches:
+      - main  # or your main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ap-south-1
+      ECR_REPO: react-app
+      IMAGE_TAG: latest
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+
+    - name: 🔐 Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: 🐳 Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: 🏗️ Build Docker image
+      run: |
+        docker build -t $ECR_REPO:$IMAGE_TAG .
+
+    - name: 🏷️ Tag Docker image
+      run: |
+        docker tag $ECR_REPO:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$IMAGE_TAG
+
+    - name: 🚀 Push Docker image to ECR
+      run: |
+        docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$IMAGE_TAG
+
+    - name: 📦 Terraform Init
+      working-directory: ./Terraform/ecr-ecs
+      run: terraform init
+
+    - name: ⚙️ Terraform Apply
+      working-directory: ./Terraform/ecr-ecs
+      run: terraform apply -auto-approve

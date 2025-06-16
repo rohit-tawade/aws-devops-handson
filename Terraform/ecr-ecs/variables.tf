@@ -9,5 +9,5 @@ variable "subnets" {
 
 variable "security_groups" {
   type = list(string)
-  default = ["sg-02b564e387e383830"] # replace with SG allowing port 80
+  default = ["sg-0faf1c65cea866ed9"] # replace with SG allowing port 80
 }
