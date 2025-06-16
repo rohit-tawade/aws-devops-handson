@@ -1,0 +1,7 @@
+name: Terraform EC2 Provisioning
+on: push
+jobs:
+  terraform:
+    steps:
+      - uses: hashicorp/setup-terraform@v1
+      - run: terraform init && terraform apply -auto-approve
