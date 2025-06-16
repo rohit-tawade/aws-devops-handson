@@ -1,0 +1,32 @@
+- hosts: tag_Name_MyEC2Instance  # Matches dynamic inventory group
+  become: true
+  tasks:
+    - name: Install required packages
+      apt:
+        name: ['nodejs', 'npm', 'git']
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install required packages (Amazon Linux)
+      yum:
+        name: ['nodejs', 'npm', 'git']
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Clone frontend repo
+      git:
+        repo: https://github.com/deshraj-techhub/react-frontend-app.git
+        dest: /app
+        force: yes
+
+    - name: Install npm dependencies
+      command: npm install
+      args:
+        chdir: /app
+
+    - name: Start the React app
+      command: npm start
+      args:
+        chdir: /app
+      async: 300
+      poll: 0
