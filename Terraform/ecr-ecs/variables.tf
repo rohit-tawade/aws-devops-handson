@@ -1,13 +1,17 @@
+variable "aws_region" {
+  default = "ap-south-1"
+}
+
 variable "app_name" {
   default = "react-app"
 }
 
-variable "subnets" {
+variable "subnet_ids" {
   type = list(string)
-  default = ["subnet-0f7ba6cc9e8ab61ae", "subnet-0b68e9127af19b57d"] # replace with public subnet IDs
+  description = "List of subnet IDs for ECS service networking"
 }
 
-variable "security_groups" {
-  type = list(string)
-  default = ["sg-0faf1c65cea866ed9"] # replace with SG allowing port 80
+variable "security_group_id" {
+  type = string
+  description = "Security group ID for ECS service networking"
 }
