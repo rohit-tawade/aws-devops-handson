@@ -23,36 +23,16 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install ansible boto3 botocore
-        ansible-galaxy collection install amazon.aws --force
 
-    - name: 🔍 Test Ansible Dynamic Inventory
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ap-south-1
+    - name: 🔑 Add SSH Key for EC2 Access
       run: |
-        echo "Listing EC2 hosts from dynamic inventory:"
-        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
-        ansible-inventory -i Ansible/aws_ec2.yaml --list
-        echo "Host groups:"
-        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
-        ansible-inventory -i Ansible/aws_ec2.yaml --graph
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+      shell: bash
 
-    - name: 🛠️ Debug Ansible Inventory
+    - name: 🚀 Run Ansible Playbook on EC2 using static inventory
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ap-south-1
+        ANSIBLE_HOST_KEY_CHECKING: False
       run: |
-        echo "🔎 Testing Ansible Dynamic Inventory"
-        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
-        ansible-inventory -i Ansible/aws_ec2.yaml --graph
-
-    - name: 🚀 Run Ansible Playbook
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ap-south-1
-      run: |
-        ANSIBLE_INVENTORY_ENABLED=amazon.aws.aws_ec2 \
-        ansible-playbook -i Ansible/aws_ec2.yaml Ansible/deploy.yml
+        ansible-playbook -i Ansible/inventory.ini Ansible/deploy.yml

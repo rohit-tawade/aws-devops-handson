@@ -1,31 +1,42 @@
-- hosts: tag_Name_MyEC2Instance  # Target EC2 by tag Name
-  become: true
+---
+- name: 🚀 Deploy React App to EC2
+  hosts: web
+  become: yes
+
+  vars:
+    app_dir: /home/ec2-user/app
+
   tasks:
-    - name: Install required packages on Debian-based systems
-      apt:
-        name: ['nodejs', 'npm', 'git']
-        state: present
-        update_cache: yes
-      when: ansible_os_family == "Debian"
-
-    - name: Install required packages on RedHat-based systems (Amazon Linux)
+    - name: Update all packages
       yum:
-        name: ['nodejs', 'npm', 'git']
-        state: present
-      when: ansible_os_family == "RedHat"
+        name: '*'
+        state: latest
 
-    - name: Clone React frontend repo
+    - name: Install Node.js and npm
+      yum:
+        name: nodejs
+        state: present
+
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+
+    - name: Clone the frontend app from GitHub
       git:
-        repo: https://github.com/rohit-tawade/aws-devops-handson-task.git
-        dest: /app
+        repo: 'https://github.com/rohit-tawade/aws-devops-handson.git'
+        dest: "{{ app_dir }}"
+        version: main
         force: yes
 
     - name: Install npm dependencies
-      command: npm install
-      args:
-        chdir: /app
+      npm:
+        path: "{{ app_dir }}/frontend"
+        production: yes
 
-    - name: Start the React app in background
-      shell: nohup npm start > app.log 2>&1 &
+    - name: Start React app in background
+      shell: |
+        cd {{ app_dir }}/frontend
+        nohup npm start &
       args:
-        chdir: /app
+        chdir: "{{ app_dir }}/frontend"
