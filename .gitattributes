@@ -1,0 +1,15 @@
+# Normalize all text files
+* text=auto
+
+# Use LF for all code files
+*.sh   text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.tpl  text eol=lf
+*.tf   text eol=lf
+*.json text eol=lf
+*.js   text eol=lf
+*.ts   text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.md   text eol=lf

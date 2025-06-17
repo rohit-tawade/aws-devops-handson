@@ -1,0 +1,19 @@
+replicaCount: 2
+
+image:
+  repository: 615299736218.dkr.ecr.ap-south-1.amazonaws.com/react-app
+  pullPolicy: IfNotPresent  
+  tag: latest
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30087
+
+resources: {}
+
+ingress:
+  enabled: false
+
+serviceAccount:
+  create: false
