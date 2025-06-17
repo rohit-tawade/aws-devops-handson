@@ -4,10 +4,12 @@ resource "aws_ecs_cluster" "react_cluster" {
 
 resource "aws_ecs_task_definition" "react_task" {
   family                   = "${var.app_name}-task"
-  network_mode            = "awsvpc"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                     = "256"
-  memory                  = "512"
+  cpu                      = "256"
+  memory                   = "512"
+
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
@@ -37,5 +39,8 @@ resource "aws_ecs_service" "react_service" {
     security_groups  = [var.security_group_id]
   }
 
-  depends_on = [aws_ecs_task_definition.react_task]
+  depends_on = [
+    aws_ecs_task_definition.react_task,
+    aws_iam_role_policy_attachment.ecs_execution_policy_attachment
+  ]
 }

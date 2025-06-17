@@ -3,7 +3,7 @@ name: 🚀 Deploy React App to AWS ECS
 on:
   push:
     branches:
-      - main  # Adjust if your default branch is different
+      - main  # Trigger only on push to main branch
 
 jobs:
   deploy:
@@ -28,7 +28,7 @@ jobs:
     - name: 📦 Install Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: 1.6.6  # Use latest stable if needed
+        terraform_version: 1.6.6
 
     - name: 📦 Terraform Init
       working-directory: ./Terraform/ecr-ecs
