@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-echo
+  namespace: crecita-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-echo
+  template:
+    metadata:
+      labels:
+        app: http-echo
+    spec:
+      containers:
+      - name: echo
+        image: hashicorp/http-echo
+        args:
+          - "-text=$(WELCOME_MSG)"
+        env:
+          - name: WELCOME_MSG
+            valueFrom:
+              secretKeyRef:
+                name: welcome-secret
+                key: WELCOME_MSG
+        ports:
+          - containerPort: 5678
