@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-server
+  namespace: crecita-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-server
+  template:
+    metadata:
+      labels:
+        app: file-server
+    spec:
+      containers:
+      - name: web
+        image: python:3.9-slim
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            mkdir -p /usr/share/messages && \
+            ln -s /etc/secret-volume/message /usr/share/messages/message.txt && \
+            cd /usr/share/messages && \
+            python3 -m http.server 80
+        volumeMounts:
+        - name: secret-volume
+          mountPath: /etc/secret-volume
+          readOnly: true
+        ports:
+        - containerPort: 80
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: welcome-secret
+          optional: false
